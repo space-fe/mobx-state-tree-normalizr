@@ -2,6 +2,26 @@
 
 Normalizr for mobx-state-tree
 
+## Install
+
+Install from NPM repository using yarn or npm
+
+```javascript
+npm install mobx-state-tree-normalizr
+```
+
+```javascript
+yarn add mobx-state-tree-normalizr
+```
+
+## Motivation
+
+mobx-state-tree-normalizr helps awesome [mobx-state-tree](https://github.com/mobxjs/mobx-state-tree) and [normalizr](https://github.com/paularmstrong/normalizr) work together.
+
+In [mobx-state-tree](https://github.com/mobxjs/mobx-state-tree), we use `types.model` to describe the shape of your data. On the other hand, in [normalizr](https://github.com/paularmstrong/normalizr), we use `schema`, which is quite like types.model in some way. That means you need to do some extra work.
+
+mobx-state-tree-normalizr is aims to normalize your data by using `types.model` but not `schema`.
+
 ## Usage
 
 The original data might look like this:
