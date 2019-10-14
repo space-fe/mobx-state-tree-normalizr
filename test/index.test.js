@@ -1,3 +1,7 @@
+import {types} from 'mobx-state-tree'
+
+import normalize from '../src'
+
 describe("normalize", () => {
   [22, null, undefined, "22", Symbol(), true, () => {}].forEach(input => {
     test(`cannot normalize input that === ${input}`, () => {
@@ -19,8 +23,13 @@ describe("normalize", () => {
       name: "ken",
     };
 
+<<<<<<< Updated upstream
     expect(normalize(input, User)).toBe({});
   });
+=======
+    expect(normalize(input, User).toBe({})
+  })
+>>>>>>> Stashed changes
 
   test("does not modify the original input", () => {
     const User = types.model("user", {

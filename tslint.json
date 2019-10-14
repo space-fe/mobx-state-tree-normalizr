@@ -1,0 +1,17 @@
+{
+  "extends": ["tslint:latest", "tslint-eslint-rules", "tslint-config-prettier"],
+  "rules": {
+    // "prettier": true,
+    "no-console": false,
+    "member-access": false,
+    "ordered-imports": false,
+    "jsx-boolean-value": false,
+    "jsx-no-lambda": false,
+    "no-submodule-imports": false,
+    "no-implicit-dependencies": false,
+    "object-literal-sort-keys": false,
+    "no-unused-expression": true,
+    "no-shadowed-variable": false
+  },
+  "rulesDirectory": ["tslint-config-prettier"]
+}
