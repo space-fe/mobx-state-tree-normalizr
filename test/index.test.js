@@ -1,26 +1,26 @@
 describe("normalize", () => {
-  [22, null, undefined, "22", new Symbol(), true, () => {}].forEach(input => {
+  [22, null, undefined, "22", Symbol(), true, () => {}].forEach(input => {
     test(`cannot normalize input that === ${input}`, () => {
       expect(normalize(input, types.model("test", {})).toThrow());
     });
   });
 
-  test("cannot normalize without a types.model", () => {
+  test("cannot normalize without a mobx model", () => {
     expect(normalize({})).toThrow();
     expect(normalize({}, Object.create())).toThrow();
   });
 
-  test('cannot normalize without an identification', () => {
-    const User = types.model('user', {
-      name: types.string
-    })
+  test("cannot normalize when the model has no key of identifier type or id property by default", () => {
+    const User = types.model("user", {
+      name: types.string,
+    });
 
     const input = {
-      name: 'ken'
-    }
+      name: "ken",
+    };
 
-    expect(
-  })
+    expect(normalize(input, User)).toBe({});
+  });
 
   test("does not modify the original input", () => {
     const User = types.model("user", {
@@ -66,27 +66,38 @@ describe("normalize", () => {
     expect(normalize(input, Users).result).toBe(undefined);
   });
 
-  test("can normalize entities", () => {
-    const model = types.model("test", {
-      p1: types.string,
+  test("can normalize entity", () => {
+    const model = types.model("user", {
+      id: types.identifier,
+      name: types.string,
     });
 
     const originalData = {
       id: "1",
-      p1: "p1 string",
+      name: "ben",
     };
 
-    expect(normalize(originalData, model)).toMatchSnapshot();
+    expect(normalize(originalData, model)).toEqual({
+      result: "1",
+      entities: {
+        user: {
+          "1": {
+            id: "1",
+            name: "ben",
+          },
+        },
+      },
+    });
   });
 
-  test("can normalize nested entities", () => {
+  test("can normalize nested entity", () => {
     const User = types.model("user", {
-      id: "user 1",
-      name: "ken",
+      id: types.string,
+      name: types.string,
     });
 
     const Article = types.model("article", {
-      id: "article 1",
+      id: types.string,
       author: User,
     });
 
@@ -97,113 +108,224 @@ describe("normalize", () => {
         name: "Paul",
       },
     };
-    expect(normalize(input, article)).toMatchSnapshot();
+    expect(normalize(input, article)).toEqual({
+      result: "123",
+      entities: {
+        article: {
+          "123": {
+            id: "123",
+            author: "8472",
+          },
+        },
+        user: {
+          "8472": {
+            id: "8472",
+            name: "Paul",
+          },
+        },
+      },
+    });
   });
 
-  test('can normalize from types.maybe', () => {
-    const User = types.model('user', {
-      id: types.string,
-      name: types.maybe(types.string)
-    })
+  test("can normalize when the model has a custom primary key(types.identifier type)", () => {
+    const User = types.model("user", {
+      name: types.identifier,
+      gender: types.string,
+    });
 
     const input = {
-      id: '12',
-      name: 'ken',
-    }
+      name: "ben",
+      gender: "male",
+    };
 
-    const normalizedData = normalize(input, User)
+    expect(normalize(input, User)).toEqual({
+      result: "ben",
+      entities: {
+        user: {
+          ben: {
+            name: "ben",
+            gender: "male",
+          },
+        },
+      },
+    });
+  });
 
-    expect(normalizedData.entities.user['ken']).toEqual(input)
-    expect(normalize(input, User)).toMatchSnapshot();
-  })
+  test("can normalize entities with circular references", () => {
+    const User = types.model("user", {
+      id: types.identifier,
+      name: types.string,
+      friend: types.maybe(types.reference(types.late(() => User))),
+    });
 
-  test('can normalize from types.optional', () => {
-    const User = types.model('user', {
+    const input = {
+      id: "1",
+      name: "ben",
+      friend: {
+        id: 2,
+        name: "jack",
+        friend: "1",
+      },
+    };
+
+    expect(
+      normalize(input, User).toEqual({
+        result: "1",
+        entities: {
+          user: {
+            "1": {
+              id: "1",
+              name: "ben",
+              friend: "2",
+            },
+            "2": {
+              id: "2",
+              name: "jack",
+              friend: "1",
+            },
+          },
+        },
+      })
+    );
+  });
+
+  test("can normalize with types.maybe", () => {
+    const User = types.model("user", {
+      id: types.string,
+      name: types.maybe(types.string),
+    });
+
+    const input = {
+      id: "12",
+      name: "ken",
+    };
+
+    const normalizedData = normalize(input, User);
+
+    expect(normalizedData.entities.user["ken"]).toEqual(input);
+  });
+
+  test("can normalize with types.optional", () => {
+    const User = types.model("user", {
       id: types.string,
       name: types.string,
-      age: types.optional(types.number, 20)
-    })
+      age: types.optional(types.number, 20),
+    });
 
     const input = {
-      id: '',
-      name: 'ken',
-      age: 17
-    }
+      id: "1",
+      name: "ken",
+      age: 17,
+    };
 
-    const normalizedData = normalize(input, User)
+    const normalizedData = normalize(input, User);
 
-    expect(normalizedData.entities.user['ken']).toEqual(input)
-    expect(normalize(input, User)).toMatchSnapshot();
-  })
+    expect(normalizedData.entities.user["ken"]).toEqual(input);
+  });
 
-  test('can normalize from types.union', () => {
-    const User = types.model('user', {
+  test("can normalize with types.union", () => {
+    const User = types.model("user", {
       id: types.string,
       name: types.string,
-      gender: types.union(types.literal('male'), types.literal('female'))
-    })
+      gender: types.union(types.literal("male"), types.literal("female")),
+    });
 
     const input = {
-      id: '12',
-      name: 'ken',
-      gender: 'male'
-    }
+      id: "12",
+      name: "ken",
+      gender: "male",
+    };
 
-    const normalizedData = normalize(input, User)
+    const normalizedData = normalize(input, User);
 
-    expect(normalizedData.entities.user['ken']).toEqual(input)
-    expect(normalize(input, User)).toMatchSnapshot();
-  })
+    expect(normalizedData.entities.user["ken"]).toEqual(input);
+  });
 
-  test('can normalize from types.reference', () => {
-    const User = types.model('user', {
+  test("can normalize with types.reference", () => {
+    const User = types.model("user", {
       id: types.string,
-      name: types.string
-    })
+      name: types.string,
+    });
 
-    const Article = types.model('article', {
+    const Article = types.model("article", {
       id: types.string,
-      author: types.reference(User)
-    })
+      author: types.reference(User),
+    });
 
     const input = {
-      id: '12',
+      id: "12",
       author: {
-        id: '23',
-        name: 'ken'
-      }
-    }
+        id: "23",
+        name: "ken",
+      },
+    };
 
-    expect(normalize(input, Article)).toMatchSnapshot();
-  })
+    expect(normalize(input, Article)).toEqual({
+      result: "12",
+      entities: {
+        article: {
+          "12": {
+            id: "12",
+            author: "23",
+          },
+        },
+        user: {
+          "23": {
+            id: "23",
+            name: "ken",
+          },
+        },
+      },
+    });
+  });
 
-  test('can normalize from types.array', () => {
-    const User = types.model('user', {
+  test("can normalize with types.array", () => {
+    const User = types.model("user", {
       id: types.string,
-      name: types.string
-    })
+      name: types.string,
+    });
 
-    const Comment = types.model('comment', {
+    const Comment = types.model("comment", {
       id: types.string,
-      comments: types.array(User)
-    })
+      comments: types.array(User),
+    });
 
     const input = {
-      id: '12',
+      id: "12",
       comments: [
         {
-          id: '1',
-          name: 'ben'
+          id: "1",
+          name: "ben",
         },
         {
-          id: '2',
-          name: 'ken'
-        }
-      ]
-    }
+          id: "2",
+          name: "ken",
+        },
+      ],
+    };
 
-    const normalizedData = normalize(input, Comment)
+    const normalizedData = normalize(input, Comment);
 
-    expect(normalize(input, User)).toMatchSnapshot();
-  })
+    expect(normalize(input, User)).toEqual({
+      result: "12",
+      entities: {
+        comment: {
+          "12": {
+            id: "12",
+            comments: [1, 2],
+          },
+        },
+        user: {
+          "1": {
+            id: "1",
+            name: "ben",
+          },
+          "2": {
+            id: "2",
+            name: "ken",
+          },
+        },
+      },
+    });
+  });
 });
