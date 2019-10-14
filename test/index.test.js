@@ -127,7 +127,7 @@ describe("normalize", () => {
     });
   });
 
-  test("can normalize when using types.identifier", () => {
+  test("can normalize when the model has a custom primary key(types.identifier type)", () => {
     const User = types.model("user", {
       name: types.identifier,
       gender: types.string,
@@ -189,7 +189,7 @@ describe("normalize", () => {
     );
   });
 
-  test("can normalize from types.maybe", () => {
+  test("can normalize with types.maybe", () => {
     const User = types.model("user", {
       id: types.string,
       name: types.maybe(types.string),
@@ -205,7 +205,7 @@ describe("normalize", () => {
     expect(normalizedData.entities.user["ken"]).toEqual(input);
   });
 
-  test("can normalize from types.optional", () => {
+  test("can normalize with types.optional", () => {
     const User = types.model("user", {
       id: types.string,
       name: types.string,
@@ -213,7 +213,7 @@ describe("normalize", () => {
     });
 
     const input = {
-      id: "",
+      id: "1",
       name: "ken",
       age: 17,
     };
@@ -223,7 +223,7 @@ describe("normalize", () => {
     expect(normalizedData.entities.user["ken"]).toEqual(input);
   });
 
-  test("can normalize from types.union", () => {
+  test("can normalize with types.union", () => {
     const User = types.model("user", {
       id: types.string,
       name: types.string,
@@ -241,7 +241,7 @@ describe("normalize", () => {
     expect(normalizedData.entities.user["ken"]).toEqual(input);
   });
 
-  test("can normalize from types.reference", () => {
+  test("can normalize with types.reference", () => {
     const User = types.model("user", {
       id: types.string,
       name: types.string,
@@ -279,7 +279,7 @@ describe("normalize", () => {
     });
   });
 
-  test("can normalize from types.array", () => {
+  test("can normalize with types.array", () => {
     const User = types.model("user", {
       id: types.string,
       name: types.string,
