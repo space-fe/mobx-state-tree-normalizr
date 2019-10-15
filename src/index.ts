@@ -81,7 +81,6 @@ function deepFirstSearchTraversal(input: IObject, model: IMyModelType, entities:
     const model = node.model
     const input = node.input
     const currentEntity = addEntity(input, model)
-
     model.forAllProps((key: any, childType: any) => {
       if (!input[key] || typeof input[key] !== 'object') {
         return
@@ -136,7 +135,7 @@ function getSubType(model: any) {
 
 function normalizeFromModel(input: IObject, model: IMyModelType, currentEntity: any, key: string) {
   const result = getIdentifierValue(input[key], model)
-  if (currentEntity) {
+  if (currentEntity && result) {
     currentEntity[key] = result
   }
   return {

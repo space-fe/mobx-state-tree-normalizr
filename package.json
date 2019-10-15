@@ -9,7 +9,7 @@
   "scripts": {
     "test": "jest",
     "build": "rollup -c",
-    "tslint": "tslint 'src/**/*.ts'"
+    "lint": "tslint src/**/*.ts"
   },
   "peerDependencies": {
     "mobx": "^5.14.0",
