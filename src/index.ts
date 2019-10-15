@@ -1,5 +1,5 @@
 import { isModelType, isArrayType } from 'mobx-state-tree'
-import { isObject, isPlainObject } from 'utils'
+import { isObject, isPlainObject } from './utils'
 
 interface IResult {
   result?: string | number
@@ -27,6 +27,8 @@ function normalize(input: any, model: any): any {
     return normalizeFromObject(input, model)
   } else if (Array.isArray(input)) {
     // return normalizeFromArray(input, model)
+  } else {
+    throw new TypeError('input type error')
   }
 }
 
@@ -60,7 +62,7 @@ function deepFirstSearchTraversal(input: IObject, model: IMyModelType, entities:
 
     model.forAllProps((key: any, childType: any) => {
       if (!input[key] || typeof input[key] !== 'object') {
-        console.log(`Property that does not exist, position: ${JSON.stringify(input)}, property: ${key}`)
+        // console.log(`Property that does not exist, position: ${JSON.stringify(input)}, property: ${key}`)
         return
       }
 
@@ -69,7 +71,7 @@ function deepFirstSearchTraversal(input: IObject, model: IMyModelType, entities:
       } else {
         let isArray = false
         let isModelTypeInDeep = false
-        let realModel = null
+        let realModel: IMyModelType | any = null
         const result = modelSubTypeTraversal(childType)
 
         for (let i = 0; i < result.length; i++) {

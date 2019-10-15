@@ -1,7 +1,8 @@
 module.exports = {
-  moduleFileExtensions: ['js', 'ts', 'tsx'],
+  moduleFileExtensions: ['js', 'ts'],
   transform: {
-    '^.+\\.tsx?$': 'ts-jest'
-  },
-  testMatch: ['<rootDir>/test/**/*.ts?(x)']
+    '^.+\\.js$': '<rootDir>/node_modules/babel-jest',
+    '.*\\.(ts)$': '<rootDir>/node_modules/ts-jest/preprocessor.js'
+  }
+  // testMatch: ['<rootDir>/test/**/*.js']
 }
