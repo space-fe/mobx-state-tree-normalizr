@@ -6,10 +6,15 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
+  "pre-commit": [
+    "precommit-msg",
+    "lint"
+  ],
   "scripts": {
     "test": "jest",
     "build": "rollup -c",
-    "lint": "tslint src/**/*.ts"
+    "lint": "tslint src/**/*.ts",
+    "precommit-msg": "echo 'Pre-commit checks...' && exit 0"
   },
   "peerDependencies": {
     "mobx": "^5.14.0",
@@ -23,6 +28,7 @@
     "jest": "^24.9.0",
     "mobx": "^5.14.0",
     "mobx-state-tree": "^3.14.1",
+    "pre-commit": "^1.2.2",
     "rollup": "^1.22.0",
     "rollup-plugin-typescript2": "^0.24.3",
     "ts-jest": "^24.1.0",
