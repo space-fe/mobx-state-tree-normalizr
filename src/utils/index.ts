@@ -5,7 +5,7 @@
  * @returns {boolean} True if the argument appears to be an object
  */
 export function isObject(obj: any): boolean {
-  return typeof obj === 'object' && obj !== null
+  return typeof obj === 'object' && obj !== null && !Array.isArray(obj)
 }
 
 /**

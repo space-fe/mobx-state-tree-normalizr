@@ -156,6 +156,40 @@ describe('normalize', () => {
     })
   })
 
+  test('can normalize array input', () => {
+    const User = types.model('user', {
+      id: types.identifier,
+      name: types.string
+    })
+
+    const input = [
+      {
+        id: '1',
+        name: 'ben'
+      },
+      {
+        id: '2',
+        name: 'lily'
+      }
+    ]
+
+    expect(normalize(input, [User])).toEqual({
+      result: ['1', '2'],
+      entities: {
+        user: {
+          '1': {
+            id: '1',
+            name: 'ben'
+          },
+          '2': {
+            id: '2',
+            name: 'lily'
+          }
+        }
+      }
+    })
+  })
+
   test('can normalize entities with circular references', () => {
     const User = types.model('user', {
       id: types.identifier,

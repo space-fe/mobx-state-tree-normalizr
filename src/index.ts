@@ -20,24 +20,46 @@ interface IModelStackItem {
   input: IObject
 }
 
+/**
+ * The exposed function, used to normalize data or data collection
+ *
+ * @param input original data or collection
+ * @param model mobx-state-tree model
+ */
 function normalize(input: IObject, model: IMyModelType): IResult
 function normalize(input: IObject[], model: IMyModelType[]): IResult[]
 function normalize(input: any, model: any): any {
   if (isObject(input)) {
-    return normalizeFromObject(input, model)
+    return normalizeFromObject(input, model, {})
   } else if (Array.isArray(input)) {
-    // return normalizeFromArray(input, model)
+    return normalizeFromArray(input, model)
   } else {
-    throw new TypeError('input type error')
+    throw new TypeError('Expect input to be an array or object')
   }
 }
 
-function normalizeFromObject(input: IObject, model: IMyModelType) {
+function normalizeFromArray(inputs: IObject[], model: IMyModelType) {
+  if (!Array.isArray(inputs) || !Array.isArray(model)) {
+    throw new TypeError('Expect both input and model to be array types')
+  }
+
+  const results: any[] = []
+  const entities = {}
+
+  inputs.forEach(input => {
+    const normalizedData = normalizeFromObject(input, model[0], entities)
+    const { result } = normalizedData
+    results.push(result)
+  })
+
+  return { result: results, entities }
+}
+
+function normalizeFromObject(input: IObject, model: IMyModelType, entities: IObject) {
   validateInput(input)
   validateModel(model)
 
-  const result = getPrimaryKeyValue(input, model)
-  const entities = {}
+  const result = getIdentifierValue(input, model)
 
   deepFirstSearchTraversal(input, model, entities)
 
@@ -62,7 +84,6 @@ function deepFirstSearchTraversal(input: IObject, model: IMyModelType, entities:
 
     model.forAllProps((key: any, childType: any) => {
       if (!input[key] || typeof input[key] !== 'object') {
-        // console.log(`Property that does not exist, position: ${JSON.stringify(input)}, property: ${key}`)
         return
       }
 
@@ -160,13 +181,9 @@ function addEntities(entities: IObject) {
   }
 }
 
+// return the value of a model's primary key
 function getIdentifierValue(input: IObject, model: IMyModelType) {
   const entityType = model.identifierAttribute || 'id'
-  return input[entityType]
-}
-
-function getPrimaryKeyValue(input: any, model: any): string | number {
-  const entityType: string = model.identifierAttribute || 'id'
   return input[entityType]
 }
 
@@ -175,13 +192,13 @@ function validateInput(input: any) {
     throw new Error(`Unexpected data type:${typeof input} given to normalize.`)
   }
   if (!isPlainObject(input)) {
-    throw new Error('the input was expected to be a plain object')
+    throw new Error('The input data was expected to be a plain object')
   }
 }
 
 function validateModel(model: any) {
   if (!isModelType(model)) {
-    throw new Error('the model parameter is not a model type in mobx-state-tree')
+    throw new Error('The model parameter is not a model type in mobx-state-tree')
   }
 }
 
