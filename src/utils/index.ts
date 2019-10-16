@@ -1,4 +1,5 @@
 /**
+ * Determine if input is a js object
  *
  * @param {any} obj The object to inspect
  *
@@ -9,6 +10,7 @@ export function isObject(obj: any): boolean {
 }
 
 /**
+ * Determine if input is a plain object
  *
  * @param {any} obj The object to inspect
  *

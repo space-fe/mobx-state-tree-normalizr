@@ -30,7 +30,7 @@ function normalize(input: IObject, model: IMyModelType): IResult
 function normalize(input: IObject[], model: IMyModelType[]): IResult[]
 function normalize(input: any, model: any): any {
   if (isObject(input)) {
-    return normalizeFromObject(input, model, {})
+    return normalizeFromObject(input, model, {}, [])
   } else if (Array.isArray(input)) {
     return normalizeFromArray(input, model)
   } else {
@@ -45,9 +45,10 @@ function normalizeFromArray(inputs: IObject[], model: IMyModelType) {
 
   const results: any[] = []
   const entities = {}
+  const visitedEntityCollection = []
 
   inputs.forEach(input => {
-    const normalizedData = normalizeFromObject(input, model[0], entities)
+    const normalizedData = normalizeFromObject(input, model[0], entities, visitedEntityCollection)
     const { result } = normalizedData
     results.push(result)
   })
@@ -55,18 +56,37 @@ function normalizeFromArray(inputs: IObject[], model: IMyModelType) {
   return { result: results, entities }
 }
 
-function normalizeFromObject(input: IObject, model: IMyModelType, entities: IObject) {
+function normalizeFromObject(
+  input: IObject,
+  model: IMyModelType,
+  entities: IObject,
+  visitedEntityCollection: IObject[]
+) {
   validateInput(input)
   validateModel(model)
 
   const result = getIdentifierValue(input, model)
 
-  deepFirstSearchTraversal(input, model, entities)
+  deepFirstSearchTraversal(input, model, entities, visitedEntityCollection)
 
   return result ? { result, entities } : { entities }
 }
 
-function deepFirstSearchTraversal(input: IObject, model: IMyModelType, entities: IObject) {
+/**
+ * This method is used to traverse the model tree, find out all the real models
+ * and normalize the corresponding data
+ *
+ * @param input The input data corresponding to the current model in the traversal
+ * @param model The current model
+ * @param entities The position to store entities
+ * @param visitedEntityCollection Store all visited entities to resolve circular reference issues
+ */
+function deepFirstSearchTraversal(
+  input: IObject,
+  model: IMyModelType,
+  entities: IObject,
+  visitedEntityCollection: IObject[]
+) {
   const addEntity = addEntities(entities)
 
   const modelStack: IModelStackItem[] = [
@@ -80,7 +100,15 @@ function deepFirstSearchTraversal(input: IObject, model: IMyModelType, entities:
     const node: any = modelStack.pop()
     const model = node.model
     const input = node.input
+
+    if (visitedEntityCollection.some(entity => entity === input)) {
+      break
+    } else {
+      visitedEntityCollection.push(input)
+    }
+
     const currentEntity = addEntity(input, model)
+
     model.forAllProps((key: any, childType: any) => {
       if (!input[key] || typeof input[key] !== 'object') {
         return
@@ -115,6 +143,7 @@ function deepFirstSearchTraversal(input: IObject, model: IMyModelType, entities:
   }
 }
 
+// This method traverses the model subType tree
 function modelSubTypeTraversal(model: IMyModelType): any {
   const subType: any = []
 

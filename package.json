@@ -11,7 +11,7 @@
     "lint"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "jest --collectCoverage",
     "build": "rollup -c",
     "lint": "tslint src/**/*.ts",
     "precommit-msg": "echo 'Pre-commit checks...' && exit 0"

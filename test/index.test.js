@@ -191,26 +191,28 @@ describe('normalize', () => {
   })
 
   test('can normalize entities with circular references', () => {
-    const User = types.model('user', {
+    const User = types.model('users', {
       id: types.identifier,
       name: types.string,
       friend: types.maybe(types.reference(types.late(() => User)))
     })
 
-    const input = {
+    const input1 = {
       id: '1',
-      name: 'ben',
-      friend: {
-        id: '2',
-        name: 'jack',
-        friend: '1'
-      }
+      name: 'ben'
     }
 
-    expect(normalize(input, User)).toEqual({
-      result: '1',
+    const input2 = {
+      id: '2',
+      name: 'june'
+    }
+    input1.friend = input2
+    input2.friend = input1
+
+    expect(normalize([input1, input2], [User])).toEqual({
+      result: ['1', '2'],
       entities: {
-        user: {
+        users: {
           '1': {
             id: '1',
             name: 'ben',
@@ -218,7 +220,7 @@ describe('normalize', () => {
           },
           '2': {
             id: '2',
-            name: 'jack',
+            name: 'june',
             friend: '1'
           }
         }
