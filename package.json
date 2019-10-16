@@ -8,7 +8,8 @@
   "license": "MIT",
   "pre-commit": [
     "precommit-msg",
-    "lint"
+    "lint",
+    "test"
   ],
   "scripts": {
     "test": "jest --collectCoverage",
