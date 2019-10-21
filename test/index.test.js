@@ -71,6 +71,36 @@ describe('normalize', () => {
     expect(normalize(input, Users).result).toBe(undefined)
   })
 
+  test('When input is an array, expect model to be an array.', () => {
+    const User = types.model('user', {
+      id: types.string,
+      name: types.string
+    })
+
+    const input = [
+      {
+        id: '1',
+        name: 'jack'
+      }
+    ]
+
+    expect(() => normalize(input, User)).toThrow()
+  })
+
+  test('Expected input is an plain object', () => {
+    const proto = {}
+    const User = types.model('user', {
+      id: types.string,
+      name: types.string
+    })
+    Object.setPrototypeOf(User, proto)
+    const input = {
+      id: '1',
+      name: 'ben'
+    }
+    expect(() => normalize(input, User)).toThrow()
+  })
+
   test('can normalize entity', () => {
     const model = types.model('user', {
       id: types.identifier,
@@ -257,9 +287,17 @@ describe('normalize', () => {
       age: 17
     }
 
+    const input2 = {
+      id: '2',
+      name: 'jack'
+    }
+
     const normalizedData = normalize(input, User)
 
+    const normalizedData2 = normalize(input2, User)
+
     expect(normalizedData.entities.user['1']).toEqual(input)
+    expect(normalizedData2.entities.user['2'].age).toBe(20)
   })
 
   test('can normalize with types.union', () => {
