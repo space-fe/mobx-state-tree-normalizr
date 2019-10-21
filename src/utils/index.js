@@ -5,7 +5,7 @@
  *
  * @returns {boolean} True if the argument appears to be an object
  */
-export function isObject(obj: any): boolean {
+export function isObject(obj) {
   return typeof obj === 'object' && obj !== null && !Array.isArray(obj)
 }
 
@@ -16,12 +16,12 @@ export function isObject(obj: any): boolean {
  *
  * @returns {boolean} True if the argument appears to be a plain object.
  */
-export function isPlainObject(obj: any): boolean {
+export function isPlainObject(obj) {
   if (typeof obj !== 'object' || obj === null) {
     return false
   }
 
-  let proto: any = obj
+  let proto = obj
   while (Object.getPrototypeOf(proto) !== null) {
     proto = Object.getPrototypeOf(proto)
   }
