@@ -1,0 +1,45 @@
+{
+  "name": "mobx-state-tree-normalizr",
+  "version": "1.0.0",
+  "description": "A tool for normalize data from mobx-state-tree types.model",
+  "repository": "https://github.com/space-fe/mobx-state-tree-normalizr",
+  "main": "dist/index.js",
+  "types": "types/index",
+  "license": "MIT",
+  "pre-commit": [
+    "precommit-msg",
+    "lint",
+    "test"
+  ],
+  "scripts": {
+    "test": "jest --collectCoverage",
+    "build": "rollup -c",
+    "lint": "tslint src/**/*.ts",
+    "precommit-msg": "echo 'Pre-commit checks...' && exit 0"
+  },
+  "peerDependencies": {
+    "mobx": "^5.14.0",
+    "mobx-state-tree": "^3.14.1"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.6.3",
+    "@types/jest": "^24.0.18",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^24.9.0",
+    "babel-preset-env": "^1.7.0",
+    "jest": "^24.9.0",
+    "mobx": "^5.14.0",
+    "mobx-state-tree": "^3.14.1",
+    "pre-commit": "^1.2.2",
+    "rollup": "^1.22.0",
+    "rollup-plugin-typescript2": "^0.24.3",
+    "ts-jest": "^24.1.0",
+    "tslint": "^5.20.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-eslint-rules": "^5.4.0",
+    "typescript": "^3.6.3"
+  },
+  "dependencies": {
+    "rollup-plugin-babel": "^4.3.3"
+  }
+}
