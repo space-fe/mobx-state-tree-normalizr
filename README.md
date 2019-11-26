@@ -45,47 +45,47 @@ The original data might look like this:
 
 ```javascript
 const originalData = {
-  id: "123",
-  title: "My awesome blog post",
+  id: '123',
+  title: 'My awesome blog post',
   author: {
-    id: "1",
-    name: "Nana",
-    gender: "m",
-  },
-};
+    id: '1',
+    name: 'Nana',
+    gender: 'm'
+  }
+}
 ```
 
 Now, when we use mobx-state-tree, we can build a model for this data structure like this:
 
 ```javascript
-import { types } from "mobx-state-tree";
+import { types } from 'mobx-state-tree'
 
-const User = types.model("user", {
+const User = types.model('user', {
   id: types.identifier,
   name: types.string,
-  gender: types.enumeration("gender", ["m", "n"]),
-});
+  gender: types.enumeration('gender', ['m', 'n'])
+})
 
-const Article = types.model("article", {
+const Article = types.model('article', {
   id: types.string,
   title: types.string,
-  author: types.maybe(types.reference(types.late(() => User))),
-});
+  author: types.maybe(types.reference(types.late(() => User)))
+})
 ```
 
 After that, we can use these models as schemas to normalize our nested data
 
 ```javascript
-import { normalize } from "mobx-state-tree-normalizr";
+import normalize from 'mobx-state-tree-normalizr'
 
-const normalizedData = normalize(originalData, Article);
+const normalizedData = normalize(originalData, Article)
 ```
 
 Now, normalizedData will be:
 
 ```javascript
 {
-  result': '123',
+  result: '123',
   entities: {
     'article': {
       '123': {
