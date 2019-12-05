@@ -133,8 +133,12 @@ function normalizeFromLateType(input, type) {
 }
 
 function normalizeFromReferenceType(input, type) {
-  const realType = type.targetType;
-  return this.normalizeFromAnyType(input, realType);
+  if (input instanceof Object) {
+    const realType = type.targetType;
+    return this.normalizeFromModel(input, realType);
+  }
+
+  return input;
 } // This method is an entry. Find the corresponding handler by judging the mst's type of the type passed.
 // It should be noted that some types may contain more than one type value.
 // There is no way to uniquely identify them.At present,
@@ -144,8 +148,6 @@ function normalizeFromReferenceType(input, type) {
 function normalizeFromAnyType(input, type) {
   if (isLateType(type)) {
     return this.normalizeFromLateType(input, type);
-  } else if (isModelType(type)) {
-    return this.normalizeFromModel(input, type);
   } else if (isUnionType(type)) {
     return this.normalizeFromUnionType(input, type);
   } else if (isOptionalType(type)) {
