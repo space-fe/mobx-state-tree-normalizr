@@ -1,6 +1,8 @@
 import { isModelType, isReferenceType, isLateType, isUnionType, isOptionalType, isArrayType } from 'mobx-state-tree'
 import { isObject, isPlainObject } from './utils/index.js'
 
+const ANONYMOUS_MODEL = 'AnonymousModel'
+
 const normalize = (input, model) => {
   return Array.isArray(input) ? normalizeFromArray(input, model) : normalizeFromObject(input, model)
 }
@@ -55,6 +57,14 @@ const normalizeFromType = (entities, visitedEntities) => {
 }
 
 function normalizeFromModel(input, model) {
+  if (!input) {
+    return
+  }
+
+  if (!isObject(input)) {
+    return input
+  }
+
   if (this.visitedEntities.some(entity => entity === input)) {
     return getIdentifierValue(input, model)
   } else {
@@ -112,6 +122,10 @@ function normalizeFromAnyType(input, type) {
   if (isLateType(type)) {
     return this.normalizeFromLateType(input, type)
   } else if (isModelType(type)) {
+    if (type.name === ANONYMOUS_MODEL) {
+      return input
+    }
+
     return this.normalizeFromModel(input, type)
   } else if (isUnionType(type)) {
     return this.normalizeFromUnionType(input, type)
