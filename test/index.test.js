@@ -125,6 +125,70 @@ describe('normalize', () => {
     })
   })
 
+  test('no need to normalize when a model without name property', () => {
+    const User = types.model({
+      id: types.string,
+      name: types.string
+    })
+
+    const Article = types.model('article', {
+      id: types.string,
+      author: User
+    })
+
+    const input = {
+      id: '123',
+      author: {
+        id: '8472',
+        name: 'Paul'
+      }
+    }
+
+    expect(normalize(input, Article)).toEqual({
+      result: '123',
+      entities: {
+        article: {
+          '123': {
+            id: '123',
+            author: {
+              id: '8472',
+              name: 'Paul'
+            }
+          }
+        }
+      }
+    })
+  })
+
+  test('when the data type of input is basic type and normalize with a named model, just return the value of input', () => {
+    const User = types.model('User', {
+      id: types.string,
+      name: types.string
+    })
+
+    const Article = types.model('article', {
+      id: types.string,
+      author: User
+    })
+
+    const input = {
+      id: '123',
+      author: 'user/1'
+    }
+
+    expect(normalize(input, Article)).toEqual({
+      result: '123',
+      entities: {
+        article: {
+          '123': {
+            id: '123',
+            author: 'user/1'
+          }
+        }
+      }
+    })
+  })
+
   test('can normalize nested entity', () => {
     const User = types.model('user', {
       id: types.string,
@@ -143,6 +207,7 @@ describe('normalize', () => {
         name: 'Paul'
       }
     }
+
     expect(normalize(input, Article)).toEqual({
       result: '123',
       entities: {
