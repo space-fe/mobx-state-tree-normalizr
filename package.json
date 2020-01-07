@@ -1,6 +1,6 @@
 {
   "name": "mobx-state-tree-normalizr",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A tool for normalize data from mobx-state-tree types.model",
   "repository": "https://github.com/space-fe/mobx-state-tree-normalizr",
   "main": "dist/index.js",

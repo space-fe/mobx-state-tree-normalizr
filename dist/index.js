@@ -155,7 +155,7 @@ function normalizeFromAnyType(input, type) {
   if (isLateType(type)) {
     return this.normalizeFromLateType(input, type);
   } else if (isModelType(type)) {
-    if (type.name === ANONYMOUS_MODEL) {
+    if (type.name.indexOf(ANONYMOUS_MODEL) >= 0) {
       return input;
     }
 
