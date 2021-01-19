@@ -142,7 +142,7 @@ function normalizeFromAnyType(input, type) {
 
 const addEntities = entities => (input, model) => {
   const result = getIdentifierValue(input, model)
-  if (!result) {
+  if (result === undefined) {
     return null
   }
   const entityName = model.name
