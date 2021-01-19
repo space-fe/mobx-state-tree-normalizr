@@ -470,4 +470,19 @@ describe('normalize', () => {
       }
     })
   })
+  
+  test('should accept 0 as identifierNumber', () => {
+    const User = types.model('User', {
+      id: types.identifierNumber,
+      name: types.string
+    })
+
+    let input = {
+      id: 0,
+      name: 'jane'
+    }
+
+    const res = normalize(input, User)
+    expect(res.entities.User['0']).toBeDefined()
+  })
 })
